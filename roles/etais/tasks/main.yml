@@ -1,0 +1,2 @@
+  - name: Scoring user
+    include: scoring_user.yml
