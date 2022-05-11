@@ -1,8 +1,8 @@
 - hosts: etais
   user: centos
   become: yes
-  become_user: root
 
   roles:
   - ssh
   - etais
+  - dns
