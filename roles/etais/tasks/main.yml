@@ -1,2 +1,5 @@
+  - name: SSH config
+    include: update_sshd_config.yml
+  
   - name: Scoring user
     include: scoring_user.yml
