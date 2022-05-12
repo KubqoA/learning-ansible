@@ -1,0 +1,60 @@
+- name: Install Bind
+  dnf:
+    name:
+      - bind
+      - bind-utils
+    state: latest
+
+- name: Create /var/named/log directory
+  file:
+    path: /var/named/log
+    state: directory
+    mode: '0750'
+    owner: named
+    group: named
+
+- name: Create log files in /var/named/log
+  file:
+    path: '/var/named/log/{{ item }}'
+    state: touch
+    mode: 0640
+    owner: named
+    group: named
+    modification_time: preserve
+    access_time: preserve
+  loop:
+    - 'default'
+    - 'auth_servers'
+    - 'zone_transfers'
+    - 'client_security'
+    - 'queries'
+    - 'query-errors'
+
+- name: Update /etc/named.conf
+  template: src=named.conf.j2
+    dest=/etc/named.conf
+    backup=yes
+    owner=root group=named mode=0640
+    validate='/usr/sbin/named-checkconf %s'
+  notify:
+    - restart named
+
+- name: Set correct permissions for BIND config files
+  file:
+    path: '{{item}}'
+    owner: root
+    group: named
+    mode: '0640'
+  loop:
+    - '/etc/named.conf'
+
+- name: Enable named service
+  systemd:
+    name: named
+    enabled: yes
+
+- name: Update /etc/resolv.conf
+  template: src=resolv.conf.j2
+    dest=/etc/resolv.conf
+    backup=yes
+    owner=root group=root mode=0644
