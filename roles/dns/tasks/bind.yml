@@ -45,6 +45,11 @@
     owner=root group=named mode=0640
     validate='/usr/sbin/named-checkzone {{ hostname }}.{{ domain_name }} %s'
 
+- name: Set reversed_subnet and host facts
+  set_fact:
+    reversed_subnet: "{{ ip | regex_replace('([0-9]*)\\.([0-9]*)\\.([0-9]*)\\.([0-9]*)', '\\3.\\2.\\1') }}"
+    host: "{{ ip | regex_replace('([0-9]*)\\.([0-9]*)\\.([0-9]*)\\.([0-9]*)', '\\4') }}"
+
 - name: Create reverse zone file
   template: src=reverse_zone_file.j2
     dest='/etc/named/reverse.{{ hostname }}.{{ domain_name }}'
