@@ -1,9 +1,9 @@
-{% set domain = hostname.domain_name %}
+{% set fqdn = hostname + '.' + domain_name %}
 {% set serial = '2022051207' %}
 ;
-; BIND data file for local zone {{ hostname }}.{{ domain_name }};
+; BIND data file for local zone {{ fqdn }};
 $TTL    15M
-@       IN      SOA     ns1.{{ hostname }}.{{ domain_name }}. root.{{ hostname }}.{{ domain_name }}. (
+@       IN      SOA     ns1.{{ fqdn }}. root.{{ fqdn }}. (
                      {{serial}}         ; Serial
                             15M         ; Refresh
                              5M         ; Retry

@@ -1,4 +1,4 @@
-{% set domain = hostname.domain_name %}
+{% set fqdn = hostname + '.' + domain_name %}
 {% set serial = '2022051202' %}
 
 $ORIGIN {{ reversed_subnet }}.in-addr.arpa.   ; Zone starting point in the name-space tree
@@ -6,11 +6,11 @@ $ORIGIN {{ reversed_subnet }}.in-addr.arpa.   ; Zone starting point in the name-
                      ; zone declaration in name.conf.local file
 
 $TTL    15M
-@       IN      SOA     ns1.{{ hostname }}.{{ domain_name }}. root.{{ hostname }}.{{ domain_name }}. (
+@       IN      SOA     ns1.{{ fqdn }}. root.{{ fqdn }}. (
                      {{serial}}         ; Serial
                             15M         ; Refresh
                              5M         ; Retry
                            120M         ; Expire
                             600 )       ; Negative Cache TTL
-@              IN      NS      ns1.{{ hostname }}.{{ domain_name }}.
-{{ host }}     IN      PTR     {{ hostname }}.{{ domain_name }}. ; {{ ip }} has name {{ hostname }}.{{ domain_name }}
+@              IN      NS      ns1.{{ fqdn }}.
+{{ host }}     IN      PTR     {{ fqdn }}. ; {{ ip }} has name {{ fqdn }}
