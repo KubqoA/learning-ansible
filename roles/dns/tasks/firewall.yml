@@ -1,0 +1,17 @@
+- name: Firewall add DNS service
+  firewalld:
+    service: dns
+    permanent: yes
+    state: enabled
+
+- name: Firewall add port 8301/udp
+  firewalld:
+    port: 8301/udp
+    permanent: yes
+    state: enabled
+
+- name: Firewall add port 8301/tcp
+  firewalld:
+    port: 8301/tcp
+    permanent: yes
+    state: enabled
