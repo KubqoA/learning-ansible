@@ -44,6 +44,8 @@
     backup=yes
     owner=root group=named mode=0640
     validate='/usr/sbin/named-checkzone {{ hostname }}.{{ domain_name }} %s'
+  notify:
+    - restart named
 
 - name: Set reversed_subnet and host facts
   set_fact:
@@ -56,6 +58,8 @@
     backup=yes
     owner=root group=named mode=0640
     validate='/usr/sbin/named-checkzone {{ reversed_subnet }}.in-addr.arpa %s'
+  notify:
+    - restart named
 
 - name: Update /etc/named.conf
   template: src=named.conf.j2

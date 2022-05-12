@@ -1,5 +1,5 @@
 {% set domain = hostname.domain_name %}
-{% set serial = '2022051203' %}
+{% set serial = '2022051207' %}
 ;
 ; BIND data file for local zone {{ hostname }}.{{ domain_name }};
 $TTL    15M
@@ -13,3 +13,6 @@ $TTL    15M
 @              IN      A       {{ ip }}
 ns1            IN      A       {{ ip }}
 {{ hostname }} IN      A       {{ ip }}
+www            IN      CNAME   @
+proxy          IN      CNAME   @
+wordpress      IN      CNAME   @

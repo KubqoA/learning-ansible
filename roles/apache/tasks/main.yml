@@ -1,0 +1,18 @@
+- name: Install Apache
+  dnf:
+    name:
+      - httpd
+    state: latest
+
+- name: Firewall add HTTP service
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Enable httpd service
+  systemd:
+    name: httpd
+    enabled: yes
+    state: started
