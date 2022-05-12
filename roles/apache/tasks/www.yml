@@ -1,0 +1,26 @@
+- name: Create directory for www virtual host
+  file:
+    path: '/var/www/html/www.{{ hostname }}/public_html'
+    state: directory
+    mode: '0755'
+
+- name: Copy files to the www virtual host
+  copy:
+    src: '{{ item }}'
+    dest: '/var/www/html/www.{{ hostname }}/public_html/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+  - 'index.html'
+  - 'me.jpg'
+  - 'pubkey.txt'
+
+- name: Create www virtual host
+  template: src=www.conf.j2
+    dest='/etc/httpd/conf.d/www.{{ hostname }}.conf'
+    backup=yes
+    owner=root group=root mode=0644
+    validate='apachectl configtest %s'
+  notify:
+    - restart httpd

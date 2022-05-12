@@ -1,0 +1,45 @@
+- name: Add proxy user
+  user:
+    name: proxy
+
+- name: Install Flask python package
+  pip:
+    name: flask
+
+- name: Create /usr/local/lib/server.py
+  copy:
+    src: server.py
+    dest: /usr/local/lib/server.py
+    owner: proxy
+    group: proxy
+    mode: '0740'
+
+- name: Create proxy.service
+  copy:
+    src: proxy.service
+    dest: /etc/systemd/system/proxy.service
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Enable and start proxy.service
+  systemd:
+    daemon_reload: yes
+    name: proxy
+    enabled: yes
+    state: started
+
+- name: Allow HTTPD to connect to Python server
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Create proxy virtual host
+  template: src=proxy.conf.j2
+    dest='/etc/httpd/conf.d/proxy.{{ hostname }}.conf'
+    backup=yes
+    owner=root group=root mode=0644
+    validate='apachectl configtest %s'
+  notify:
+    - restart httpd

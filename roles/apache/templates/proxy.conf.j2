@@ -1,0 +1,14 @@
+{% set name = 'proxy' %}
+{% set fqdn = name + '.' + hostname + '.' + domain_name %}
+
+<VirtualHost *:80>
+    ServerName {{ fqdn }}
+    # ServerName sets the name to listen for with requests
+    ErrorLog /var/log/httpd/{{ fqdn }}-error_log
+    CustomLog /var/log/httpd/{{ fqdn }}-access_log common
+
+    ProxyPreserveHost On
+
+    ProxyPass / http://localhost:5000/
+    ProxyPassReverse / http://localhost:5000/
+</VirtualHost>

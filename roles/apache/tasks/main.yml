@@ -16,3 +16,9 @@
     name: httpd
     enabled: yes
     state: started
+
+- name: Set up www virtual host
+  include: www.yml
+
+- name: Set up proxy virtual host
+  include: proxy.yml
