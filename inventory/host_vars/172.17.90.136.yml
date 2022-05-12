@@ -1,2 +1,6 @@
 hostname: C20301
 domain_name: sa.cs.ut.ee
+
+ip: 172.17.90.136
+reversed_subnet: 90.17.172
+host: 136

@@ -30,6 +30,28 @@
     - 'queries'
     - 'query-errors'
 
+- name: Set correct permissions for /etc/named
+  file:
+    path: /etc/named
+    state: directory
+    mode: '0750'
+    owner: root
+    group: named
+
+- name: Create zone file
+  template: src=zone_file.j2
+    dest='/etc/named/{{ hostname }}.{{ domain_name }}'
+    backup=yes
+    owner=root group=named mode=0640
+    validate='/usr/sbin/named-checkzone {{ hostname }}.{{ domain_name }} %s'
+
+- name: Create reverse zone file
+  template: src=reverse_zone_file.j2
+    dest='/etc/named/reverse.{{ hostname }}.{{ domain_name }}'
+    backup=yes
+    owner=root group=named mode=0640
+    validate='/usr/sbin/named-checkzone {{ reversed_subnet }}.in-addr.arpa %s'
+
 - name: Update /etc/named.conf
   template: src=named.conf.j2
     dest=/etc/named.conf
@@ -38,15 +60,6 @@
     validate='/usr/sbin/named-checkconf %s'
   notify:
     - restart named
-
-- name: Set correct permissions for BIND config files
-  file:
-    path: '{{item}}'
-    owner: root
-    group: named
-    mode: '0640'
-  loop:
-    - '/etc/named.conf'
 
 - name: Enable named service
   systemd:

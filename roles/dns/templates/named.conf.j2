@@ -40,6 +40,8 @@ options {
 
         /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
         include "/etc/crypto-policies/back-ends/bind.config";
+
+        also-notify { 172.17.66.134; };
 };
 
 logging {
@@ -173,6 +175,19 @@ logging {
 zone "." IN {
         type hint;
         file "named.ca";
+};
+
+zone "{{ hostname }}.{{ domain_name }}" IN {
+        type master;
+        file "/etc/named/{{ hostname }}.{{ domain_name }}";
+        allow-update { none; };
+        notify explicit;
+};
+
+zone "{{ reversed_subnet }}.in-addr.arpa" IN {
+        type master;
+        file "/etc/named/reverse.{{ hostname }}.{{ domain_name }}";
+        allow-update { none; };
 };
 
 include "/etc/named.rfc1912.zones";
