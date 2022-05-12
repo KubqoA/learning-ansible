@@ -22,3 +22,6 @@
 
 - name: Set up proxy virtual host
   include: proxy.yml
+
+- name: Set up Apache modules
+  include: modules.yml

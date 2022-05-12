@@ -1,0 +1,25 @@
+- name: Enable mod_log_forensics module
+  copy:
+    src: 11-forensics.conf
+    dest: /etc/httpd/conf.modules.d/11-forensics.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart httpd
+
+- name: Install mod_security module
+  dnf:
+    name:
+      - mod_security
+    state: latest
+
+- name: Config mod_security module
+  copy:
+    src: modsecurity_localrules.conf
+    dest: /etc/httpd/modsecurity.d/local_rules/modsecurity_localrules.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart httpd

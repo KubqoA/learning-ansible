@@ -1,11 +1,12 @@
-{% set name = 'proxy' %}
-{% set fqdn = name + '.' + hostname + '.' + domain_name %}
+{% set virtual_host = 'proxy.' + hostname %}
+{% set fqdn = virtual_host + '.' + domain_name %}
 
 <VirtualHost *:80>
     ServerName {{ fqdn }}
     # ServerName sets the name to listen for with requests
-    ErrorLog /var/log/httpd/{{ fqdn }}-error_log
-    CustomLog /var/log/httpd/{{ fqdn }}-access_log common
+    ErrorLog /var/log/httpd/{{ virtual_host }}-error.log
+    CustomLog /var/log/httpd/{{ virtual_host }}-access.log common
+    ForensicLog /var/log/httpd/{{ virtual_host }}-forensic.log
 
     ProxyPreserveHost On
 
