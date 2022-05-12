@@ -19,9 +19,15 @@
 
 - name: Set up www virtual host
   include: www.yml
+  tags: www
 
 - name: Set up proxy virtual host
   include: proxy.yml
+  tags: proxy
+
+- name: Set up Wordpress
+  include: wordpress.yml
+  tags: wordpress
 
 - name: Set up Apache modules
   include: modules.yml

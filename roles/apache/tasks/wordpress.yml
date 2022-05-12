@@ -1,0 +1,69 @@
+- name: Install Wordpress dependencies
+  dnf:
+    name:
+      - php-mysqlnd
+      - php-fpm
+      - mariadb-server
+      - tar
+      - curl
+      - php-json
+      - python3-mysqlclient
+    state: latest
+
+- name: Start and enable mariadb service
+  systemd:
+    daemon_reload: yes
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Create a new database with name 'wordpress'
+  community.mysql.mysql_db:
+    name: wordpress
+    state: present
+
+- name: Create new user
+  community.mysql.mysql_user:
+    name: admin
+    password: pass
+    priv:
+      'wordpress.*': 'ALL,GRANT'
+    state: present
+
+- name: Create directory for wordpress virtual host
+  file:
+    path: '/var/www/html/wordpress.{{ hostname }}'
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'
+
+- name: Download and unarchive latest wordpress
+  unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: '/var/www/html/wordpress.{{ hostname }}'
+    remote_src: yes
+    owner: apache
+    group: apache
+
+- name: Change the SELinux security context.
+  sefcontext:
+    target: '/var/www/html/wordpress.{{ hostname }}'
+    setype: httpd_sys_rw_content_t
+    state: present
+
+- name: Create wordpress virtual host
+  template: src=wordpress.conf.j2
+    dest='/etc/httpd/conf.d/wordpress.{{ hostname }}.conf'
+    backup=yes
+    owner=root group=root mode=0644
+    validate='apachectl configtest %s'
+  notify:
+    - restart httpd
+
+- name: Start and enable php-fpm service
+  systemd:
+    daemon_reload: yes
+    name: php-fpm
+    state: started
+    enabled: yes

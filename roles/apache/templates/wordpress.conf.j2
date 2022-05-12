@@ -1,10 +1,9 @@
-{% set virtual_host = 'www.' + hostname %}
+{% set virtual_host = 'wordpress.' + hostname %}
 {% set fqdn = virtual_host + '.' + domain_name %}
 
 <VirtualHost *:80>
     ServerName {{ fqdn }}
-    ServerAlias {{ hostname }}.{{ domain_name }}
-    DocumentRoot /var/www/html/{{ virtual_host }}/public_html
+    DocumentRoot /var/www/html/{{ virtual_host }}/wordpress
     # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
     LogLevel warn
 

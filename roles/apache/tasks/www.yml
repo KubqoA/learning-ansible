@@ -4,6 +4,11 @@
     state: directory
     mode: '0755'
 
+- name: Copy index.html to the www virtual host
+  template:
+    src: index.html.j2
+    dest: '/var/www/html/www.{{ hostname }}/public_html/index.html'
+
 - name: Copy files to the www virtual host
   copy:
     src: '{{ item }}'
@@ -12,7 +17,6 @@
     group: root
     mode: '0644'
   loop:
-  - 'index.html'
   - 'me.jpg'
   - 'pubkey.txt'
 
