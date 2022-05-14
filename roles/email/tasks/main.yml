@@ -69,3 +69,8 @@
   send_verification_email:
     recipient: nagios@scoring.sa.cs.ut.ee
   become_user: mailuser
+
+- name: Add roundcube
+  include: roundcube.yml
+  tags:
+    - roundcube

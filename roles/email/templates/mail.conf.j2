@@ -1,0 +1,18 @@
+{% set virtual_host = 'mail.' + hostname %}
+{% set fqdn = virtual_host + '.' + domain_name %}
+
+<VirtualHost *:80>
+    ServerAdmin root@{{ fqdn }}
+    ServerName {{ fqdn }}
+    ServerAlias {{ hostname }}.{{ domain_name }}
+    DocumentRoot /var/www/html/{{ virtual_host }}/public_html
+    <Directory /var/www/html/{{ virtual_host }}/public_html>
+        Allowoverride all
+    </Directory>
+    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+    LogLevel warn
+
+    ErrorLog /var/log/httpd/{{ virtual_host }}-error.log
+    CustomLog /var/log/httpd/{{ virtual_host }}-access.log combined
+    ForensicLog /var/log/httpd/{{ virtual_host }}-forensic.log
+</VirtualHost>

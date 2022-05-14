@@ -7,3 +7,15 @@
   systemd:
     state: restarted
     name: dovecot
+
+- name: restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+    enabled: yes
+
+- name: restart php-fpm
+  systemd:
+    name: php-fpm
+    state: restarted
+    enabled: yes

@@ -1,0 +1,150 @@
+- name: Install epel-release and dnf-plugins-core
+  dnf:
+    name:
+      - epel-release
+      - dnf-plugins-core 
+    state: latest
+
+- name: Enable dnf powertools
+  dnf:
+    enable_plugin: powertools
+
+- name: Install roundcube dependencies
+  dnf:
+    name:
+      - make
+      - ImageMagick
+      - ImageMagick-devel
+      - ImageMagick-perl
+      - pcre-devel
+      - zlib
+      - zlib-devel
+      - libzip
+      - libzip-devel
+      - libmcrypt-devel
+      - php
+      - php-fpm
+      - php-devel
+      - php-pear
+      - php-cli
+      - php-gd
+      - php-curl
+      - php-xml
+      - php-mysqlnd
+      - php-mbstring
+      - php-intl
+      - php-ldap
+      - mariadb
+      - mariadb-server
+      - httpd
+    state: latest
+
+- name: Install dependencies via PECL
+  shell: "/bin/yes | /bin/pecl install {{ item }}"
+  register: pecl_result
+  changed_when: pecl_result is succeeded
+  failed_when: "not (('already installed' in pecl_result.stdout) or ('install ok:' in pecl_result.stdout))"
+  loop:
+    - imagick
+    - mcrypt
+    - zip
+
+- name: Enable PECL extensions
+  template:
+    src: extension.ini.j2
+    dest: '/etc/php.d/20-{{ item }}.ini'
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - imagick
+    - mcrypt
+    - zip
+  notify:
+    - restart php-fpm
+
+- name: Start and enable services
+  systemd:
+    daemon_reload: yes
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  loop:
+    - mariadb
+    - php-fpm
+    - httpd
+
+- name: Check if roundcube is already installed
+  stat: path=/var/www/html/mail.{{ hostname }}/public_html/index.php
+  register: mail_vhost_exists
+
+- name: Download and unarchive latest roundcube
+  unarchive:
+    src: https://github.com/roundcube/roundcubemail/releases/download/1.5.2/roundcubemail-1.5.2-complete.tar.gz
+    dest: '/tmp'
+    remote_src: yes
+    owner: apache
+    group: apache
+  when: not mail_vhost_exists
+
+- name: Move roundcube to mail virtual host folder
+  command: 'mv /tmp/roundcubemail-1.5.2 /var/www/html/mail.{{ hostname }}'
+  args:
+    removes: '/tmp/roundcubemail-1.5.2'
+    creates: '/var/www/html/mail.{{ hostname }}'
+
+- name: Create mail virtual host
+  template: src=mail.conf.j2
+    dest='/etc/httpd/conf.d/mail.{{ hostname }}.conf'
+    backup=yes
+    owner=root group=root mode=0644
+    validate='apachectl configtest %s'
+  notify:
+    - restart httpd
+
+- name: Create a new database with name 'roundcube'
+  community.mysql.mysql_db:
+    name: roundcube
+    state: present
+    force: yes
+    target: '/var/www/html/mail.{{ hostname }}/SQL/mysql.initial.sql'
+
+- name: Create secrets for roundcube
+  set_fact:
+    roundcube_db_password: "{{ lookup('password', 'credentials/' + hostname + '/roundcube_db_password length=30 chars=ascii_letters') }}"
+    roundcube_des_key: "{{ lookup('password', 'credentials/' + hostname + '/roundcube_des_key length=30') }}"
+
+- name: Create new database user with name 'roundcube'
+  community.mysql.mysql_user:
+    name: roundcube
+    password: '{{ roundcube_db_password }}'
+    priv:
+      'roundcube.*': 'ALL,GRANT'
+    state: present
+
+- name: Create /var/log/roundcube directory
+  file:
+    path: '/var/log/roundcube'
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'
+
+- name: Change the SELinux security context
+  sefcontext:
+    target: '{{ item }}'
+    setype: httpd_sys_rw_content_t
+    state: present
+  loop:
+    - '/var/www/html/mail.{{ hostname }}'
+    - /var/log/roundcube
+
+- name: Configure Roundcube
+  template:
+    src: config.inc.php.j2
+    dest: '/var/www/html/mail.{{ hostname }}/config/config.inc.php'
+    backup: yes
+    owner: apache
+    group: apache
+    mode: 0644
