@@ -2,3 +2,8 @@
   systemd:
     state: restarted
     name: postfix
+
+- name: restart dovecot
+  systemd:
+    state: restarted
+    name: dovecot

@@ -1,23 +1,59 @@
-- name: Install postifx
+- name: Install postifx and dovecot
   dnf:
     name:
       - postfix
+      - dovecot 
     state: latest
 
 - name: Prepare firewall
   include: firewall.yml
 
-- name: Configure postfix - main.cf
+- name: Add user dovecot to group mail
+  user:
+    name: dovecot
+    groups:
+      - mail
+    append: yes
+
+- name: Configure dovecot
   template:
-    src: main.cf.j2
-    dest: '/etc/postfix/main.cf'
+    src: "{{ item }}.j2"
+    dest: "/etc/{{ item }}"
     backup: yes
     owner: root
     group: root
     mode: 0644
+  loop:
+    - dovecot/dovecot.conf
+    - dovecot/conf.d/10-auth.conf
+    - dovecot/conf.d/10-logging.conf
+    - dovecot/conf.d/10-mail.conf
+    - dovecot/conf.d/10-master.conf
+    - dovecot/conf.d/10-ssl.conf
+    - dovecot/conf.d/15-mailboxes.conf
+  notify:
+    - restart dovecot
+
+- name: Enable and start dovecot
+  systemd:
+    name: dovecot
+    state: started
+    enabled: yes
+
+- name: Configure postfix
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/{{ item }}"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - postfix/master.cf
+    - postfix/main.cf
   notify:
     - restart postfix
-  
+
 - name: Enable and start postfix
   systemd:
     name: postfix
