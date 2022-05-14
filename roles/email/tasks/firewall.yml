@@ -1,0 +1,11 @@
+- name: Firewall add mail services ports
+  firewalld:
+    port: '{{ item }}'
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop:
+    - 25/udp
+    - 25/tcp
+    - 143/udp
+    - 143/tcp

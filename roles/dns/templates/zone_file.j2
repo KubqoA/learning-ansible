@@ -1,5 +1,5 @@
 {% set fqdn = hostname + '.' + domain_name %}
-{% set serial = '2022051207' %}
+{% set serial = '2022051208' %}
 ;
 ; BIND data file for local zone {{ fqdn }};
 $TTL    15M
@@ -16,3 +16,5 @@ ns1            IN      A       {{ ip }}
 www            IN      CNAME   @
 proxy          IN      CNAME   @
 wordpress      IN      CNAME   @
+mail           IN      A       {{ ip }}
+@              IN      MX 10   mail.{{ fqdn }}.

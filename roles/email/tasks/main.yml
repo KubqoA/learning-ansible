@@ -1,0 +1,35 @@
+- name: Install postifx
+  dnf:
+    name:
+      - postfix
+    state: latest
+
+- name: Prepare firewall
+  include: firewall.yml
+
+- name: Configure postfix - main.cf
+  template:
+    src: main.cf.j2
+    dest: '/etc/postfix/main.cf'
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart postfix
+  
+- name: Enable and start postfix
+  systemd:
+    name: postfix
+    state: started
+    enabled: yes
+
+- name: Add mailuser
+  user:
+    name: mailuser
+    password: "{{ mailuser_password }}"
+
+- name: Send verification email
+  send_verification_email:
+    recipient: nagios@scoring.sa.cs.ut.ee
+  become_user: mailuser
