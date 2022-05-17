@@ -2,7 +2,7 @@
   dnf:
     name:
       - epel-release
-      - dnf-plugins-core 
+      - dnf-plugins-core
     state: latest
 
 - name: Enable dnf powertools
@@ -52,7 +52,7 @@
 - name: Enable PECL extensions
   template:
     src: extension.ini.j2
-    dest: '/etc/php.d/20-{{ item }}.ini'
+    dest: "/etc/php.d/20-{{ item }}.ini"
     backup: yes
     owner: root
     group: root
@@ -67,7 +67,7 @@
 - name: Start and enable services
   systemd:
     daemon_reload: yes
-    name: '{{ item }}'
+    name: "{{ item }}"
     state: started
     enabled: yes
   loop:
@@ -82,17 +82,17 @@
 - name: Download and unarchive latest roundcube
   unarchive:
     src: https://github.com/roundcube/roundcubemail/releases/download/1.5.2/roundcubemail-1.5.2-complete.tar.gz
-    dest: '/tmp'
+    dest: "/tmp"
     remote_src: yes
     owner: apache
     group: apache
   when: not mail_vhost_exists
 
 - name: Move roundcube to mail virtual host folder
-  command: 'mv /tmp/roundcubemail-1.5.2 /var/www/html/mail.{{ hostname }}'
+  command: "mv /tmp/roundcubemail-1.5.2 /var/www/html/mail.{{ hostname }}"
   args:
-    removes: '/tmp/roundcubemail-1.5.2'
-    creates: '/var/www/html/mail.{{ hostname }}'
+    removes: "/tmp/roundcubemail-1.5.2"
+    creates: "/var/www/html/mail.{{ hostname }}"
 
 - name: Create mail virtual host
   template: src=mail.conf.j2
@@ -108,7 +108,7 @@
     name: roundcube
     state: present
     force: yes
-    target: '/var/www/html/mail.{{ hostname }}/SQL/mysql.initial.sql'
+    target: "/var/www/html/mail.{{ hostname }}/SQL/mysql.initial.sql"
 
 - name: Create secrets for roundcube
   set_fact:
@@ -118,32 +118,32 @@
 - name: Create new database user with name 'roundcube'
   community.mysql.mysql_user:
     name: roundcube
-    password: '{{ roundcube_db_password }}'
+    password: "{{ roundcube_db_password }}"
     priv:
-      'roundcube.*': 'ALL,GRANT'
+      "roundcube.*": "ALL,GRANT"
     state: present
 
 - name: Create /var/log/roundcube directory
   file:
-    path: '/var/log/roundcube'
+    path: "/var/log/roundcube"
     state: directory
     owner: apache
     group: apache
-    mode: '0755'
+    mode: "0755"
 
 - name: Change the SELinux security context
   sefcontext:
-    target: '{{ item }}'
+    target: "{{ item }}"
     setype: httpd_sys_rw_content_t
     state: present
   loop:
-    - '/var/www/html/mail.{{ hostname }}'
+    - "/var/www/html/mail.{{ hostname }}"
     - /var/log/roundcube
 
 - name: Configure Roundcube
   template:
     src: config.inc.php.j2
-    dest: '/var/www/html/mail.{{ hostname }}/config/config.inc.php'
+    dest: "/var/www/html/mail.{{ hostname }}/config/config.inc.php"
     backup: yes
     owner: apache
     group: apache

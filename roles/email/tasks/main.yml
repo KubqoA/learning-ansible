@@ -2,7 +2,8 @@
   dnf:
     name:
       - postfix
-      - dovecot 
+      - cyrus-sasl-plain
+      - dovecot
     state: latest
 
 - name: Prepare firewall

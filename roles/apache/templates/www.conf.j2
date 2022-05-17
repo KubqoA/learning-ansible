@@ -12,3 +12,20 @@
     CustomLog /var/log/httpd/{{ virtual_host }}-access.log combined
     ForensicLog /var/log/httpd/{{ virtual_host }}-forensic.log
 </VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ fqdn }}
+    ServerAlias {{ hostname }}.{{ domain_name }}
+    DocumentRoot /var/www/html/{{ virtual_host }}/public_html
+    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+    LogLevel warn
+
+    ErrorLog /var/log/httpd/{{ virtual_host }}-error.log
+    CustomLog /var/log/httpd/{{ virtual_host }}-access.log combined
+    ForensicLog /var/log/httpd/{{ virtual_host }}-forensic.log
+
+    SSLEngine on
+    SSLCertificateFile /etc/pki/tls/certs/server.crt
+    SSLCertificateKeyFile /etc/pki/tls/private/server.key
+    SSLCACertificateFile /etc/pki/tls/certs/cacert.crt
+</VirtualHost>

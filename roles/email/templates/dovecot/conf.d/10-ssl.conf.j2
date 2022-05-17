@@ -5,14 +5,14 @@
 # SSL/TLS support: yes, no, required. <doc/wiki/SSL.txt>
 # disable plain pop3 and imap, allowed are only pop3+TLS, pop3s, imap+TLS and imaps
 # plain imap and pop3 are still allowed for local connections
-ssl = no
+ssl = yes
 
 # PEM encoded X.509 SSL/TLS certificate and private key. They're opened before
 # dropping root privileges, so keep the key file unreadable by anyone but
 # root. Included doc/mkcert.sh can be used to easily generate self-signed
 # certificate, just make sure to update the domains in dovecot-openssl.cnf
-ssl_cert = </etc/pki/dovecot/certs/dovecot.pem
-ssl_key = </etc/pki/dovecot/private/dovecot.pem
+ssl_cert = </etc/pki/tls/certs/server.crt
+ssl_key = </etc/pki/tls/private/server.key
 
 # If key file is password protected, give the password here. Alternatively
 # give it when starting dovecot with -p parameter. Since this file is often

@@ -5,16 +5,12 @@
     state: enabled
     immediate: yes
 
-- name: Firewall add port 8301/udp
+- name: Firewall add port 8301
   firewalld:
-    port: 8301/udp
+    port: "{{ item }}"
     permanent: yes
     state: enabled
     immediate: yes
-
-- name: Firewall add port 8301/tcp
-  firewalld:
-    port: 8301/tcp
-    permanent: yes
-    state: enabled
-    immediate: yes
+  loop:
+    - 8301/udp
+    - 8301/tcp

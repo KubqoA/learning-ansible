@@ -12,7 +12,7 @@
     dest: /usr/local/lib/server.py
     owner: proxy
     group: proxy
-    mode: '0740'
+    mode: "0740"
 
 - name: Create proxy.service
   copy:
@@ -20,7 +20,7 @@
     dest: /etc/systemd/system/proxy.service
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Enable and start proxy.service
   systemd:

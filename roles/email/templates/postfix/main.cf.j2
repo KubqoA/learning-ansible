@@ -27,3 +27,9 @@ readme_directory = /usr/share/doc/postfix/README_FILES
 meta_directory = /etc/postfix
 
 mailbox_transport = lmtp:unix:private/dovecot-lmtp
+
+smtpd_tls_security_level = may
+smtpd_tls_cert_file=/etc/pki/tls/certs/server.crt
+smtpd_tls_key_file=/etc/pki/tls/private/server.key
+smtpd_tls_loglevel = 1
+smtp_tls_loglevel = 1

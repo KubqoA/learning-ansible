@@ -13,3 +13,21 @@
     ProxyPass / http://localhost:5000/
     ProxyPassReverse / http://localhost:5000/
 </VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ fqdn }}
+    # ServerName sets the name to listen for with requests
+    ErrorLog /var/log/httpd/{{ virtual_host }}-error.log
+    CustomLog /var/log/httpd/{{ virtual_host }}-access.log common
+    ForensicLog /var/log/httpd/{{ virtual_host }}-forensic.log
+
+    SSLEngine on
+    SSLCertificateFile /etc/pki/tls/certs/server.crt
+    SSLCertificateKeyFile /etc/pki/tls/private/server.key
+    SSLCACertificateFile /etc/pki/tls/certs/cacert.crt
+
+    ProxyPreserveHost On
+
+    ProxyPass / http://localhost:5000/
+    ProxyPassReverse / http://localhost:5000/
+</VirtualHost>

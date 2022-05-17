@@ -27,28 +27,28 @@
     name: admin
     password: pass
     priv:
-      'wordpress.*': 'ALL,GRANT'
+      "wordpress.*": "ALL,GRANT"
     state: present
 
 - name: Create directory for wordpress virtual host
   file:
-    path: '/var/www/html/wordpress.{{ hostname }}'
+    path: "/var/www/html/wordpress.{{ hostname }}"
     state: directory
     owner: apache
     group: apache
-    mode: '0755'
+    mode: "0755"
 
 - name: Download and unarchive latest wordpress
   unarchive:
     src: https://wordpress.org/latest.tar.gz
-    dest: '/var/www/html/wordpress.{{ hostname }}'
+    dest: "/var/www/html/wordpress.{{ hostname }}"
     remote_src: yes
     owner: apache
     group: apache
 
 - name: Change the SELinux security context.
   sefcontext:
-    target: '/var/www/html/wordpress.{{ hostname }}'
+    target: "/var/www/html/wordpress.{{ hostname }}"
     setype: httpd_sys_rw_content_t
     state: present
 

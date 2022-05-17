@@ -2,6 +2,7 @@
   dnf:
     name:
       - httpd
+      - mod_ssl
     state: latest
 
 - name: Firewall add HTTP service
@@ -10,6 +11,16 @@
     permanent: yes
     state: enabled
     immediate: yes
+
+- name: Firewall add HTTPS
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop:
+    - 443/udp
+    - 443/tcp
 
 - name: Enable httpd service
   systemd:

@@ -3,8 +3,9 @@
   become: true
 
   roles:
-  - { role: ssh, tags: ssh }
-  - { role: etais, tags: etais }
-  - { role: dns, tags: dns }
-  - { role: apache, tags: apache }
-  - { role: email, tags: email }
+    - { role: ssh, tags: ssh }
+    - { role: etais, tags: etais }
+    - { role: dns, tags: dns }
+    - { role: tls, tags: tls }
+    - { role: apache, tags: apache }
+    - { role: email, tags: email }
