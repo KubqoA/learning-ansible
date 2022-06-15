@@ -75,10 +75,6 @@
     - php-fpm
     - httpd
 
-- name: Check if roundcube is already installed
-  stat: path=/var/www/html/mail.{{ hostname }}/public_html/index.php
-  register: mail_vhost_exists
-
 - name: Download and unarchive latest roundcube
   unarchive:
     src: https://github.com/roundcube/roundcubemail/releases/download/1.5.2/roundcubemail-1.5.2-complete.tar.gz
@@ -86,7 +82,6 @@
     remote_src: yes
     owner: apache
     group: apache
-  when: not mail_vhost_exists
 
 - name: Move roundcube to mail virtual host folder
   command: "mv /tmp/roundcubemail-1.5.2 /var/www/html/mail.{{ hostname }}"

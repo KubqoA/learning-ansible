@@ -16,14 +16,14 @@
 - name: Issue certificate
   vault_issue_pki_int:
     url: https://scoring.sa.cs.ut.ee:8200
-    role_name: sa.cs.ut.ee
+    role_name: "{{ domain_name }}"
     token: "{{ token }}"
-    common_name: c20301.sa.cs.ut.ee
+    common_name: "{{ hostname }}.{{ domain_name }}"
     alt_names:
-      - www.c20301.sa.cs.ut.ee
-      - mail.c20301.sa.cs.ut.ee
-      - wordpress.c20301.sa.cs.ut.ee
-      - proxy.c20301.sa.cs.ut.ee
+      - www."{{ hostname }}.{{ domain_name }}"
+      - mail."{{ hostname }}.{{ domain_name }}"
+      - wordpress."{{ hostname }}.{{ domain_name }}"
+      - proxy."{{ hostname }}.{{ domain_name }}"
   register: cert
   when: not cert_exists.stat.exists or not cert_exists.stat.isreg
 
@@ -46,4 +46,4 @@
       }
   loop_control:
     label: "{{ item.dest }}"
-  when: not cert.skipped
+  when: not cert_exists.stat.exists or not cert_exists.stat.isreg

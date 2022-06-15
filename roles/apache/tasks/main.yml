@@ -22,12 +22,6 @@
     - 443/udp
     - 443/tcp
 
-- name: Enable httpd service
-  systemd:
-    name: httpd
-    enabled: yes
-    state: started
-
 - name: Set up www virtual host
   include: www.yml
   tags: www
@@ -42,3 +36,9 @@
 
 - name: Set up Apache modules
   include: modules.yml
+
+- name: Enable httpd service
+  systemd:
+    name: httpd
+    enabled: yes
+    state: started
